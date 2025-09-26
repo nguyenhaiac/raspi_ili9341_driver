@@ -1,5 +1,6 @@
 #include "stdint.h"
 #include "gpiod.h"
+#include "lvgl.h"
 
 #define SPI0 "/dev/spidev0.0"
 #define CS_PIN 25
@@ -14,7 +15,7 @@
 #define SCREEN_HORIZONTAL_1		1
 #define SCREEN_VERTICAL_2		2
 #define SCREEN_HORIZONTAL_2		3
-#define BURST_MAX_SIZE 	500
+#define BURST_MAX_SIZE 	4096
 
 #define BLACK       0x0000      
 #define NAVY        0x000F      
@@ -50,3 +51,4 @@ void ILI9341_Init(void);
 void ILI9341_Set_Address(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2);
 void ILI9341_Draw_Colour_Burst(uint16_t Colour, uint32_t Size);
 void ILI9341_Fill_Screen(uint16_t Colour);
+void ILI9341_SendBitmap(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *pixels);

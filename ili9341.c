@@ -369,3 +369,32 @@ void ILI9341_Fill_Screen(uint16_t Colour)
 ILI9341_Set_Address(0,0,LCD_WIDTH,LCD_HEIGHT);	
 ILI9341_Draw_Colour_Burst(Colour, LCD_WIDTH*LCD_HEIGHT);	
 }
+#include "lvgl.h"
+
+void ILI9341_SendBitmap(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *pixels)
+{
+    uint32_t pixel_count = w * h;
+    uint32_t Buffer_Size = (pixel_count*2 < BURST_MAX_SIZE) ? pixel_count*2 : BURST_MAX_SIZE;
+
+    set_gpio(dc, 1);
+    set_gpio(cs, 0);
+
+    unsigned char burst_buffer[Buffer_Size];
+    uint32_t bytes_filled = 0;
+    for (uint32_t i = 0; i < pixel_count; i++) {
+        uint16_t c = pixels[i];            // Already in RGB565
+        burst_buffer[bytes_filled++] = c >> 8;   // high byte
+        burst_buffer[bytes_filled++] = c & 0xFF; // low byte
+
+        if (bytes_filled >= Buffer_Size) {
+            spi_transfer(fd, burst_buffer, NULL, bytes_filled, SPEED);
+            bytes_filled = 0;
+        }
+    }
+
+    if (bytes_filled > 0) {
+        spi_transfer(fd, burst_buffer, NULL, bytes_filled, SPEED);
+    }
+
+    set_gpio(cs, 1);
+}
