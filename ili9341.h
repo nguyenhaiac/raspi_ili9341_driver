@@ -7,15 +7,15 @@
 #define DC_PIN 22
 #define RESET_PIN 27
 #define CHIP_NAME "gpiochip0"
-#define SPEED 24000000
-#define ILI9341_SCREEN_HEIGHT 240 
-#define ILI9341_SCREEN_WIDTH 	320
+#define SPEED 25000000
+#define ILI9341_SCREEN_HEIGHT 320
+#define ILI9341_SCREEN_WIDTH  240
 
-#define SCREEN_VERTICAL_1		0
-#define SCREEN_HORIZONTAL_1		1
-#define SCREEN_VERTICAL_2		2
-#define SCREEN_HORIZONTAL_2		3
-#define BURST_MAX_SIZE 	4096
+#define SCREEN_VERTICAL_1      0
+#define SCREEN_HORIZONTAL_1    1
+#define SCREEN_VERTICAL_2      2
+#define SCREEN_HORIZONTAL_2    3
+#define BURST_MAX_SIZE         4096
 
 #define BLACK       0x0000      
 #define NAVY        0x000F      
@@ -52,3 +52,6 @@ void ILI9341_Set_Address(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2);
 void ILI9341_Draw_Colour_Burst(uint16_t Colour, uint32_t Size);
 void ILI9341_Fill_Screen(uint16_t Colour);
 void ILI9341_SendBitmap(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *pixels);
+void ILI9341_DrawBitmap(uint16_t x, uint16_t y,
+                        uint16_t w, uint16_t h,
+                        const uint16_t *data);

@@ -1,3 +1,4 @@
+
 #include "gpiod.h"
 #include "stdio.h"
 #include "fcntl.h"
@@ -11,7 +12,7 @@ static struct gpiod_chip *gpiochip;
 static struct gpiod_line * cs, *reset, *dc;
 static int fd;
 volatile uint16_t LCD_HEIGHT = ILI9341_SCREEN_HEIGHT;
-volatile uint16_t LCD_WIDTH	 = ILI9341_SCREEN_WIDTH;
+volatile uint16_t LCD_WIDTH = ILI9341_SCREEN_WIDTH;
 
 void ILI9341_SPI_Init(char * spidevice, uint8_t mode, uint32_t speed){
     fd = open(spidevice, O_RDWR);
@@ -369,7 +370,6 @@ void ILI9341_Fill_Screen(uint16_t Colour)
 ILI9341_Set_Address(0,0,LCD_WIDTH,LCD_HEIGHT);	
 ILI9341_Draw_Colour_Burst(Colour, LCD_WIDTH*LCD_HEIGHT);	
 }
-#include "lvgl.h"
 
 void ILI9341_SendBitmap(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *pixels)
 {
@@ -397,4 +397,38 @@ void ILI9341_SendBitmap(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t
     }
 
     set_gpio(cs, 1);
+}
+
+void ILI9341_DrawBitmap(uint16_t x, uint16_t y,
+                        uint16_t w, uint16_t h,
+                        const uint16_t *data)
+{
+    uint32_t size = w * h * 2;   // total bytes
+    uint32_t full_blocks = size / BURST_MAX_SIZE;
+    uint32_t remainder   = size % BURST_MAX_SIZE;
+
+    // 1. Set LCD window
+    ILI9341_Set_Address(x, y, x + w - 1, y + h - 1);
+
+    // 2. Stream pixel data
+    set_gpio(dc, 1);   // data mode
+    set_gpio(cs, 0);   // CS low
+
+    for (uint32_t i = 0; i < full_blocks; i++) {
+        spi_transfer(fd,
+                     ((uint8_t*)data) + i*BURST_MAX_SIZE,
+                     NULL,
+                     BURST_MAX_SIZE,
+                     SPEED);
+    }
+
+    if (remainder > 0) {
+        spi_transfer(fd,
+                     ((uint8_t*)data) + full_blocks*BURST_MAX_SIZE,
+                     NULL,
+                     remainder,
+                     SPEED);
+    }
+
+    set_gpio(cs, 1);   // CS high
 }

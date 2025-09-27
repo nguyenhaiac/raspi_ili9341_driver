@@ -1,1 +1,6 @@
 c_cpp_properties.json
+dir-locals.el
+.cache/*
+.vscode/*
+compile_commands.json
+my_main
