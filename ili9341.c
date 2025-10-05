@@ -7,6 +7,7 @@
 #include "unistd.h"
 #include "stdint.h"
 #include "ili9341.h"
+#include "gpio.h"
 
 static struct gpiod_chip *gpiochip;
 static struct gpiod_line * cs, *reset, *dc;
@@ -24,21 +25,49 @@ void ILI9341_SPI_Init(char * spidevice, uint8_t mode, uint32_t speed){
     ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
 }
 
-void gpio_init(){
-    gpiochip = gpiod_chip_open_by_name(CHIP_NAME);
-    if(!gpiochip){
-        perror("Cannot open gpiochip");
-        return;
-    }
-    cs = gpiod_chip_get_line(gpiochip, CS_PIN);
-    dc = gpiod_chip_get_line(gpiochip, DC_PIN);
-    reset = gpiod_chip_get_line(gpiochip, RESET_PIN);
+/* void gpio_init(){ */
+/*     gpiochip = gpiod_chip_open_by_name(CHIP_NAME); */
+/*     if(!gpiochip){ */
+/*         perror("Cannot open gpiochip"); */
+/*         return; */
+/*     } */
+/*     cs = gpiod_chip_get_line(gpiochip, CS_PIN); */
+/*     dc = gpiod_chip_get_line(gpiochip, DC_PIN); */
+/*     reset = gpiod_chip_get_line(gpiochip, RESET_PIN); */
 
-    if(!cs || !dc || !reset){
-        perror("Cannot get line");
-        return;
-    }
+/*     if(!cs || !dc || !reset){ */
+/*         perror("Cannot get line"); */
+/*         return; */
+/*     } */
     
+/*     if(gpiod_line_request_output(cs, "ili9341", 0) < 0){ */
+/*         perror("Cannot get cs line"); */
+/*         return; */
+/*     } */
+
+/*     if(gpiod_line_request_output(dc, "ili9341", 0) < 0){ */
+/*         perror("Cannot get dc line"); */
+/*         return; */
+/*     } */
+
+/*     if(gpiod_line_request_output(reset, "ili9341", 1) < 0){ */
+/*         perror("Cannot get cs line"); */
+/*         return; */
+/*     } */
+/* } */
+
+/* void set_gpio(struct gpiod_line *line, int value) { */
+/*     if (gpiod_line_set_value(line, value) < 0) { */
+/*         perror("gpiod_line_set_value"); */
+/*         exit(1); */
+/*     } */
+/* } */
+
+void gpio_init(){
+    get_gpio_line(&cs, CS_PIN);
+    get_gpio_line(&reset, RESET_PIN);
+    get_gpio_line(&dc, DC_PIN);
+ 
     if(gpiod_line_request_output(cs, "ili9341", 0) < 0){
         perror("Cannot get cs line");
         return;
@@ -53,15 +82,8 @@ void gpio_init(){
         perror("Cannot get cs line");
         return;
     }
-}
 
-void set_gpio(struct gpiod_line *line, int value) {
-    if (gpiod_line_set_value(line, value) < 0) {
-        perror("gpiod_line_set_value");
-        exit(1);
-    }
 }
-
 
 
 

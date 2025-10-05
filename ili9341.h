@@ -6,7 +6,6 @@
 #define CS_PIN 25
 #define DC_PIN 22
 #define RESET_PIN 27
-#define CHIP_NAME "gpiochip0"
 #define SPEED 25000000
 #define ILI9341_SCREEN_HEIGHT 320
 #define ILI9341_SCREEN_WIDTH  240
