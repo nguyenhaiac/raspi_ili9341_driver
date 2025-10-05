@@ -3,7 +3,7 @@ UI_DIR ?= ui
 LVGL_SRC := $(shell find $(LVGL_DIR)/lvgl/src -name '*.c')
 UI_SRC := $(shell find $(UI_DIR) -name '*.c')
 
-SRC = main.c ili9341.c lvgl_connect.c gpio.c $(LVGL_SRC) $(UI_SRC)
+SRC = main.c ili9341.c lvgl_connect.c gpio.c touch.c $(LVGL_SRC) $(UI_SRC)
 
 INCLUDES = -I$(LVGL_DIR)/lvgl \
            -I$(LVGL_DIR)/lvgl/src \

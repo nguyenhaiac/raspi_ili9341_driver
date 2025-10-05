@@ -7,9 +7,11 @@
 #include "lvgl_connect.h"
 #include "ui/ui.h"
 #include "gpio.h"
+#include "touch.h"
 
 int main() {
   get_gpio_chip();
+  tp_gpio_init();
   pthread_t tick;
   pthread_create(&tick, NULL, tick_thread, NULL);
   printf("size of: %lu", sizeof(lv_color_t));
@@ -21,9 +23,18 @@ int main() {
   lv_label_set_text(label, "Hello LVGL + ILI9341!");
   lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
   ui_init();
-
+  
   while (1) {
     lv_timer_handler();  // Update LVGL tasks
     usleep(5000);        // Small delay to avoid 100% CPU
+    uint16_t position[2];
+    if(TP_Read_Coordinates(position) == TOUCHPAD_DATA_OK){
+        printf("Test Position of TOUCH\n");
+        char buffer[30];
+        sprintf(buffer,"POS X: %.3d\n", position[0]);
+        printf("%s", buffer);
+        sprintf(buffer,"POS Y: %.3d\n", position[1]);
+        printf("%s", buffer);
+    };
   }
 }
